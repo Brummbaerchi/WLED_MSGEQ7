@@ -1,3 +1,12 @@
+This is my Fork of a Fork of WLED. (What?)
+WLED is neat. WLED-Audio reactive my Atuline is neat too.
+But i'm missing MSGEQE7 support so here i am coding it myself.
+At least i try to.
+
+THIS MAY NOT BE MAINTAINED!
+
+
+
 <p align="center">
   <img src="/images/wled_logo.png">
   <a href="https://github.com/Aircoookie/WLED/releases"><img src="https://img.shields.io/github/release/Aircoookie/WLED.svg?style=flat-square"></a>
