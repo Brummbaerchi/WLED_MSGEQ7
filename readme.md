@@ -1,11 +1,11 @@
-This is my Fork of a Fork of WLED. (What?)
-WLED is neat. WLED-Audio reactive my Atuline is neat too.
-But i'm missing MSGEQE7 support so here i am coding it myself.
-At least i try to.
+This is my Fork of a Fork of WLED. (What?)<br>
+WLED is neat. WLED-Audio reactive my Atuline is neat too.<br>
+But i'm missing MSGEQE7 support so here i am coding it myself.<br>
+At least i try to.<br><br>
 
 THIS MAY NOT BE MAINTAINED!
 
-
+<br>
 
 <p align="center">
   <img src="/images/wled_logo.png">
