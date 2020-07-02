@@ -22,17 +22,11 @@ void userSetup()
   pinMode(LED_BUILTIN, OUTPUT);
 
  sampling_period_us = round(1000000*(1.0/samplingFrequency));
-
-// Define the FFT Task and lock it to core 0
-xTaskCreatePinnedToCore(
-      FFTcode,                          // Function to implement the task
-      "FFT",                            // Name of the task
-      10000,                            // Stack size in words
-      NULL,                             // Task input parameter
-      1,                                // Priority of the task
-      &FFT_Task,                        // Task handle
-      0);                               // Core where the task should run
+                              // Core where the task should run
 #endif
+
+  initAudio();
+
 }
 
 // This gets called every time WiFi is (re-)connected. Initialize own network interfaces here
@@ -45,9 +39,7 @@ void userLoop() {
 
   if (millis()-lastTime > delayMs) {                          // I need to run this continuously because the animations are too slow
     lastTime = millis();
-    getSample();                                              // Sample the microphone
-    agcAvg();                                                 // Calculated the PI adjusted value as sampleAvg
-    myVals[millis()%32] = sampleAgc;
+    refreshAudio();
   }
 
 } // userLoop()

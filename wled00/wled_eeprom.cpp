@@ -659,9 +659,6 @@ bool applyPreset(byte index, bool loadBri)
     effectSpeed = EEPROM.read(i+11);
     effectIntensity = EEPROM.read(i+16);
     effectPalette = EEPROM.read(i+17);
-    effectFFT1 = EEPROM.read(i+18);
-    effectFFT2 = EEPROM.read(i+19);
-    effectFFT3 = EEPROM.read(i+20);
   } else {
     if (ver != 2 && ver != 3) return false;
     strip.applyToAllSelected = false;
@@ -707,9 +704,6 @@ void savePreset(byte index, bool persist)
 
     EEPROM.write(i+16, effectIntensity);
     EEPROM.write(i+17, effectPalette);
-    EEPROM.write(i+18, effectFFT1);
-    EEPROM.write(i+19, effectFFT2);
-    EEPROM.write(i+20, effectFFT3);
   } else { //segment 16 can save segments
     EEPROM.write(i, 3);
     EEPROM.write(i+1, bri);

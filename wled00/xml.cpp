@@ -47,13 +47,7 @@ void XML_response(AsyncWebServerRequest *request, char* dest)
   oappendi(effectSpeed);
   oappend("</sx><ix>");
   oappendi(effectIntensity);
-  oappend("</ix><f1>");
-  oappendi(effectFFT1);
-  oappend("</f1><f2>");
-  oappendi(effectFFT2);
-  oappend("</f2><f3>");
-  oappendi(effectFFT3);
-  oappend("</f3><fp>");
+  oappend("</ix><fp>");
   oappendi(effectPalette);
   oappend("</fp><wv>");
   if (strip.rgbwMode) {
@@ -140,12 +134,6 @@ void URL_response(AsyncWebServerRequest *request)
   oappendi(effectSpeed);
   oappend("&IX=");
   oappendi(effectIntensity);
-  oappend("&F1=");
-  oappendi(effectFFT1);
-  oappend("&F2=");
-  oappendi(effectFFT2);
-  oappend("&F3=");
-  oappendi(effectFFT3);
   oappend("&FP=");
   oappendi(effectPalette);
 

@@ -97,11 +97,11 @@
 #include "const.h"
 
 #ifndef CLIENT_SSID
-  #define CLIENT_SSID DEFAULT_CLIENT_SSID
+  #define CLIENT_SSID "Justus"
 #endif
 
 #ifndef CLIENT_PASS
-  #define CLIENT_PASS ""
+  #define CLIENT_PASS "Malediven"
 #endif
 
 #if IR_PIN < 0
@@ -170,8 +170,8 @@ WLED_GLOBAL byte auxTriggeredState _INIT(0);                       // 0: input 1
 WLED_GLOBAL char ntpServerName[33] _INIT("0.wled.pool.ntp.org");   // NTP server to use
 
 // WiFi CONFIG (all these can be changed via web UI, no need to set them here)
-WLED_GLOBAL char clientSSID[33] _INIT(CLIENT_SSID);
-WLED_GLOBAL char clientPass[65] _INIT(CLIENT_PASS);
+WLED_GLOBAL char clientSSID[33] _INIT("Justus");
+WLED_GLOBAL char clientPass[65] _INIT("Malediven");
 WLED_GLOBAL char cmDNS[33] _INIT("x");                             // mDNS address (placeholder, is replaced by wledXXXXXX.local)
 WLED_GLOBAL char apSSID[33] _INIT("");                             // AP off by default (unless setup)
 WLED_GLOBAL byte apChannel _INIT(1);                               // 2.4GHz WiFi AP channel (1-13)
@@ -180,12 +180,12 @@ WLED_GLOBAL byte apBehavior _INIT(AP_BEHAVIOR_BOOT_NO_CONN);       // access poi
 WLED_GLOBAL IPAddress staticIP      _INIT_N(((  0,   0,  0,  0))); // static IP of ESP
 WLED_GLOBAL IPAddress staticGateway _INIT_N(((  0,   0,  0,  0))); // gateway (router) IP
 WLED_GLOBAL IPAddress staticSubnet  _INIT_N(((255, 255, 255, 0))); // most common subnet in home networks
-WLED_GLOBAL bool noWifiSleep _INIT(false);                         // disabling modem sleep modes will increase heat output and power usage, but may help with connection issues
+WLED_GLOBAL bool noWifiSleep _INIT(true);                         // disabling modem sleep modes will increase heat output and power usage, but may help with connection issues
 
 // LED CONFIG
-WLED_GLOBAL uint16_t ledCount _INIT(30);          // overcurrent prevented by ABL
+WLED_GLOBAL uint16_t ledCount _INIT(300);          // overcurrent prevented by ABL
 WLED_GLOBAL bool useRGBW      _INIT(false);       // SK6812 strips can contain an extra White channel
-WLED_GLOBAL bool turnOnAtBoot _INIT(true);        // turn on LEDs at power-up
+WLED_GLOBAL bool turnOnAtBoot _INIT(false);        // turn on LEDs at power-up
 WLED_GLOBAL byte bootPreset   _INIT(0);           // save preset to load after power-up
 
 WLED_GLOBAL byte col[]    _INIT_N(({ 255, 160, 0, 0 }));  // current RGB(W) primary color. col[] should be updated if you want to change the color
@@ -193,7 +193,6 @@ WLED_GLOBAL byte colSec[] _INIT_N(({ 0, 0, 0, 0 }));      // current RGB(W) seco
 WLED_GLOBAL byte briS     _INIT(128);                     // default brightness
 
 WLED_GLOBAL byte soundSquelch _INIT(10);            // default squelch value for volume reactive routines
-WLED_GLOBAL uint16_t noiseFloor _INIT(100);         // default squelch value for FFT reactive routines
 WLED_GLOBAL byte nightlightTargetBri _INIT(0);      // brightness after nightlight is over
 WLED_GLOBAL byte nightlightDelayMins _INIT(60);
 WLED_GLOBAL bool nightlightFade      _INIT(true);   // if enabled, light will gradually dim towards the target bri. Otherwise, it will instantly set after delay over
@@ -209,7 +208,7 @@ WLED_GLOBAL char serverDescription[33] _INIT("WLED-AudioReactive");  // Name of 
 WLED_GLOBAL bool syncToggleReceive     _INIT(false);   // UIs which only have a single button for sync should toggle send+receive if this is true, only send otherwise
 
 // Sync CONFIG
-WLED_GLOBAL bool buttonEnabled  _INIT(true);
+WLED_GLOBAL bool buttonEnabled  _INIT(false);
 WLED_GLOBAL byte irEnabled      _INIT(0);     // Infrared receiver
 
 WLED_GLOBAL uint16_t udpPort    _INIT(21324); // WLED notifier default port
@@ -222,7 +221,7 @@ WLED_GLOBAL bool notifyDirect _INIT(false);                       // send notifi
 WLED_GLOBAL bool notifyButton _INIT(false);                       // send if updated by button or infrared remote
 WLED_GLOBAL bool notifyAlexa  _INIT(false);                       // send notification if updated via Alexa
 WLED_GLOBAL bool notifyMacro  _INIT(false);                       // send notification for macro
-WLED_GLOBAL bool notifyHue    _INIT(true);                        // send notification if Hue light changes
+WLED_GLOBAL bool notifyHue    _INIT(false);                        // send notification if Hue light changes
 WLED_GLOBAL bool notifyTwice  _INIT(false);                       // notifications use UDP: enable if devices don't sync reliably
 
 WLED_GLOBAL bool alexaEnabled _INIT(false);                       // enable device discovery by Amazon Echo
@@ -373,9 +372,6 @@ WLED_GLOBAL bool notificationTwoRequired _INIT(false);
 WLED_GLOBAL byte effectCurrent _INIT(0);
 WLED_GLOBAL byte effectSpeed _INIT(128);
 WLED_GLOBAL byte effectIntensity _INIT(128);
-WLED_GLOBAL byte effectFFT1 _INIT(6);
-WLED_GLOBAL byte effectFFT2 _INIT(128);
-WLED_GLOBAL byte effectFFT3 _INIT(252);
 WLED_GLOBAL byte effectPalette _INIT(0);
 
 // network

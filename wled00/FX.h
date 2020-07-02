@@ -37,16 +37,13 @@
 #define DEFAULT_MODE       (uint8_t)0
 #define DEFAULT_SPEED      (uint8_t)128
 #define DEFAULT_INTENSITY  (uint8_t)128
-#define DEFAULT_FFT1       (uint8_t)6
-#define DEFAULT_FFT2       (uint8_t)128
-#define DEFAULT_FFT3       (uint8_t)252
 #define DEFAULT_COLOR      (uint32_t)0xFFAA00
 
 #define MIN(a,b) ((a)<(b)?(a):(b))
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
 /* Not used in all effects yet */
-#define WLED_FPS         42
+#define WLED_FPS         60
 #define FRAMETIME        (1000/WLED_FPS)
 
 /* each segment uses 52 bytes of SRAM memory, so if you're application fails because of
@@ -102,7 +99,7 @@
 #define IS_REVERSE      ((SEGMENT.options & REVERSE     ) == REVERSE     )
 #define IS_SELECTED     ((SEGMENT.options & SELECTED    ) == SELECTED    )
 
-#define MODE_COUNT                     133
+#define MODE_COUNT                     107
 
 #define FX_MODE_STATIC                   0
 #define FX_MODE_BLINK                    1
@@ -210,42 +207,9 @@
 #define FX_MODE_SOLID_GLITTER          103
 #define FX_MODE_SUNRISE                104
 #define FX_MODE_FLOW                   105
-#define FX_MODE_PHASED                 106
-#define FX_MODE_TWINKLEUP              107
-#define FX_MODE_NOISEPAL               108
-#define FX_MODE_SINEWAVE               109
-#define FX_MODE_PHASEDNOISE            110
-#define FX_MODE_PIXELS                 111
-#define FX_MODE_PIXELWAVE              112
-#define FX_MODE_JUGGLES                113
-#define FX_MODE_MATRIPIX               114
-#define FX_MODE_GRAVIMETER             115
-#define FX_MODE_PLASMOID               116
-#define FX_MODE_PUDDLES                117
-#define FX_MODE_MIDNOISE               118
-#define FX_MODE_NOISEMETER             119
-#define FX_MODE_FREQWAVE               120
-#define FX_MODE_FREQMATRIX             121
-#define FX_MODE_SPECTRAL               122
-#define FX_MODE_WATERFALL              123
-#define FX_MODE_FREQPIXEL              124
-#define FX_MODE_BINMAP                 125
-#define FX_MODE_NOISEPEAK              126
-#define FX_MODE_NOISEFIRE              127
-#define FX_MODE_PUDDLEPEAK             128
-#define FX_MODE_NOISEMOVE              129
-#define FX_MODE_2D01                   130
-#define FX_MODE_2D02                   131
-#define FX_MODE_2D03                   132
+#define FX_MODE_MUSIC                  106
 
-
-// Sound reactive external variables
-extern int sample;
-extern float sampleAvg;
-extern bool samplePeak;
-extern uint8_t myVals[32];
-extern int sampleAgc;
-extern uint8_t squelch;
+extern uint16_t mappedValue;
 
 
 class WS2812FX {
@@ -261,9 +225,6 @@ class WS2812FX {
       uint16_t stop; //segment invalid if stop == 0
       uint8_t speed;
       uint8_t intensity;
-      uint8_t fft1;
-      uint8_t fft2;
-      uint8_t fft3;
       uint8_t palette;
       uint8_t mode;
       uint8_t options; //bit pattern: msb first: transitional needspixelstate tbd tbd (paused) on reverse selected
@@ -444,33 +405,7 @@ class WS2812FX {
       _mode[FX_MODE_SOLID_GLITTER]           = &WS2812FX::mode_solid_glitter;
       _mode[FX_MODE_SUNRISE]                 = &WS2812FX::mode_sunrise;
       _mode[FX_MODE_FLOW]                    = &WS2812FX::mode_flow;
-      _mode[FX_MODE_PHASED]                  = &WS2812FX::mode_phased;
-      _mode[FX_MODE_TWINKLEUP]               = &WS2812FX::mode_twinkleup;
-      _mode[FX_MODE_NOISEPAL]                = &WS2812FX::mode_noisepal;
-      _mode[FX_MODE_SINEWAVE]                = &WS2812FX::mode_sinewave;
-      _mode[FX_MODE_PHASEDNOISE]             = &WS2812FX::mode_phased_noise;
-      _mode[FX_MODE_PIXELS]                  = &WS2812FX::mode_pixels;
-      _mode[FX_MODE_PIXELWAVE]               = &WS2812FX::mode_pixelwave;
-      _mode[FX_MODE_JUGGLES]                 = &WS2812FX::mode_juggles;
-      _mode[FX_MODE_MATRIPIX]                = &WS2812FX::mode_matripix;
-      _mode[FX_MODE_GRAVIMETER]              = &WS2812FX::mode_gravimeter;
-      _mode[FX_MODE_PLASMOID]                = &WS2812FX::mode_plasmoid;
-      _mode[FX_MODE_PUDDLES]                 = &WS2812FX::mode_puddles;
-      _mode[FX_MODE_MIDNOISE]                = &WS2812FX::mode_midnoise;
-      _mode[FX_MODE_NOISEMETER]              = &WS2812FX::mode_noisemeter;
-      _mode[FX_MODE_FREQWAVE]                = &WS2812FX::mode_freqwave;
-      _mode[FX_MODE_FREQMATRIX]              = &WS2812FX::mode_freqmatrix;
-      _mode[FX_MODE_SPECTRAL]                = &WS2812FX::mode_spectral;
-      _mode[FX_MODE_WATERFALL]               = &WS2812FX::mode_waterfall;
-      _mode[FX_MODE_FREQPIXEL]               = &WS2812FX::mode_freqpixel;
-      _mode[FX_MODE_BINMAP]                  = &WS2812FX::mode_binmap;
-      _mode[FX_MODE_NOISEPEAK]               = &WS2812FX::mode_noisepeak;
-      _mode[FX_MODE_NOISEFIRE]               = &WS2812FX::mode_noisefire;
-      _mode[FX_MODE_PUDDLEPEAK]              = &WS2812FX::mode_puddlepeak;
-      _mode[FX_MODE_NOISEMOVE]               = &WS2812FX::mode_noisemove;
-      _mode[FX_MODE_2D01]                    = &WS2812FX::mode_2D01;
-      _mode[FX_MODE_2D02]                    = &WS2812FX::mode_2D02;
-      _mode[FX_MODE_2D03]                    = &WS2812FX::mode_2D03;
+      _mode[FX_MODE_MUSIC]                   = &WS2812FX::mode_music;
 
 
       _brightness = DEFAULT_BRIGHTNESS;
@@ -513,7 +448,7 @@ class WS2812FX {
       gammaCorrectCol = true,
       applyToAllSelected = true,
       segmentsAreIdentical(Segment* a, Segment* b),
-      setEffectConfig(uint8_t m, uint8_t s, uint8_t i, uint8_t f1, uint8_t f2, uint8_t f3, uint8_t p);
+      setEffectConfig(uint8_t m, uint8_t s, uint8_t i, uint8_t p);
 
     uint8_t
       mainSegment = 0,
@@ -667,33 +602,7 @@ class WS2812FX {
       mode_solid_glitter(void),
       mode_sunrise(void),
       mode_flow(void),
-      mode_phased(void),
-      mode_twinkleup(void),
-      mode_noisepal(void),
-      mode_sinewave(void),
-      mode_phased_noise(void),
-      mode_pixels(void),
-      mode_pixelwave(void),
-      mode_juggles(void),
-      mode_matripix(void),
-      mode_gravimeter(void),
-      mode_plasmoid(void),
-      mode_puddles(void),
-      mode_midnoise(void),
-      mode_noisemeter(void),
-      mode_freqwave(void),
-      mode_freqmatrix(void),
-      mode_spectral(void),
-      mode_waterfall(void),
-      mode_freqpixel(void),
-      mode_binmap(void),
-      mode_noisepeak(void),
-      mode_noisefire(void),
-      mode_puddlepeak(void),
-      mode_noisemove(void),
-      mode_2D01(void),
-      mode_2D02(void),
-      mode_2D03(void);
+      mode_music(void);
 
   private:
     NeoPixelWrapper *bus;
@@ -758,8 +667,7 @@ class WS2812FX {
     uint8_t _segment_index = 0;
     uint8_t _segment_index_palette_last = 99;
     segment _segments[MAX_NUM_SEGMENTS] = { // SRAM footprint: 27 bytes per element
-      // start, stop, speed, intensity, fft1, fft2, fft3, palette, mode, options, grouping, spacing, opacity (unused), color[]
-      { 0, 7, DEFAULT_SPEED, DEFAULT_INTENSITY, DEFAULT_FFT1, DEFAULT_FFT2, DEFAULT_FFT3, 0, DEFAULT_MODE, NO_OPTIONS, 1, 0, 255, {DEFAULT_COLOR}}
+      { 0, 7, DEFAULT_SPEED, DEFAULT_INTENSITY, 0, DEFAULT_MODE, NO_OPTIONS, 1, 0, 255, {DEFAULT_COLOR}}
     };
     segment_runtime _segment_runtimes[MAX_NUM_SEGMENTS]; // SRAM footprint: 28 bytes per element
     friend class Segment_runtime;
@@ -780,10 +688,7 @@ const char JSON_mode_names[] PROGMEM = R"=====([
 "Noise 1","Noise 2","Noise 3","Noise 4","Colortwinkles","Lake","Meteor","Meteor Smooth","Railway","Ripple",
 "Twinklefox","Twinklecat","Halloween Eyes","Solid Pattern","Solid Pattern Tri","Spots","Spots Fade","Glitter","Candle","Fireworks Starburst",
 "Fireworks 1D","Bouncing Balls","Sinelon","Sinelon Dual","Sinelon Rainbow","Popcorn","Drip","Plasma","Percent","Ripple Rainbow",
-"Heartbeat","Pacifica","Candle Multi","Solid Glitter","Sunrise","Flow","Phased","Twinkleup","NoisePal","SineWave",
-"Phased Noise","* Pixels","* Pixelwave","* Juggles","* Matripix","* Gravimeter","* Plasmoid","* Puddles","* Midnoise","* Noisemeter",
-"** Freqwave","** Freqmatrix","** Spectral","** Waterfall","** Freqpixel","** Binmap","** Noisespeak","* Noisefire","* Puddlepeak","** Noisemove",
-"2D_01", "2D_02","2D_03"
+"Heartbeat","Pacifica","Candle Multi","Solid Glitter","Sunrise","Flow","Music"
 ])=====";
 
 
