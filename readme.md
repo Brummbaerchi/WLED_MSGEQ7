@@ -7,37 +7,16 @@ THIS MAY NOT BE MAINTAINED!
 
 <br>
 
-<p align="center">
-  <img src="/images/wled_logo.png">
-  <a href="https://github.com/Aircoookie/WLED/releases"><img src="https://img.shields.io/github/release/Aircoookie/WLED.svg?style=flat-square"></a>
-  <a href="https://wled.discourse.group"><img src="https://img.shields.io/discourse/topics?colorB=blue&label=forum&server=https%3A%2F%2Fwled.discourse.group%2F&style=flat-square"></a>
-  <a href="https://discord.gg/KuqP7NE"><img src="https://img.shields.io/discord/473448917040758787.svg?colorB=blue&label=discord&style=flat-square"></a>
-  <a href="https://github.com/Aircoookie/WLED/wiki"><img src="https://img.shields.io/badge/quick_start-wiki-blue.svg?style=flat-square"></a>
-  <a href="https://github.com/Aircoookie/WLED-App"><img src="https://img.shields.io/badge/app-wled-blue.svg?style=flat-square"></a>
-  </p>
 
 # 👋 Welcome to my project WLED!
-
-NOTE: This is a fork of WLED that provides sound reactivity. We have a [Sound Reactive WLED Wiki](https://github.com/atuline/WLED/wiki).
-
-And now back to WLED.
 
 A fast and feature-rich implementation of an ESP8266/ESP32 webserver to control NeoPixel (WS2812B, WS2811, SK6812, APA102) LEDs or also SPI based chipsets like the WS2801!
 
 ## ⚙️ Features
-- WS2812FX library integrated for over 100 special effects
-- FastLED noise effects and 50 palettes
-- Modern UI with color, effect and segment controls
-- Segments to set different effects and colors to parts of the LEDs
-- Settings page - configuration over network
-- Access Point and station mode - automatic failsafe AP
-- Support for RGBW strips
-- 16 user presets to save and load colors/effects easily, supports cycling through them.
-- Macro functions to automatically execute API calls
-- Nightlight function (gradually dims down)
-- Full OTA software updatability (HTTP + ArduinoOTA), password protectable
-- Configurable analog clock + support for the Cronixie kit by Diamex
-- Configurable Auto Brightness limit for safer operation
+- Everything from WLED
+- MSGEQ7 Support
+- Music Reactive Effects from atuline and his community
+- Ehmmm.... Yes
 
 ## 💡 Supported light control interfaces
 - WLED app for Android and iOS
@@ -56,7 +35,8 @@ A fast and feature-rich implementation of an ESP8266/ESP32 webserver to control 
 
 ## 📲 Quick start guide and documentation
 
-See the [wiki](https://github.com/Aircoookie/WLED/wiki)!
+See the [WLED-wiki](https://github.com/Aircoookie/WLED/wiki)!
+See the [Music Reactive-wiki from atuline](https://github.com/atuline/WLED/wiki)!
 
 DrZzs has made some excellent video guides:
 [Introduction, hardware and installation](https://www.youtube.com/watch?v=tXvtxwK3jRk)
@@ -93,6 +73,7 @@ Credits [here](https://github.com/Aircoookie/WLED/wiki/Contributors-&-About)!
 Uses Linearicons by Perxis!
 
 Join the Discord server to discuss everything about WLED!
+Any Questions? Hit me up @NeariX#4799 on Discord!
 
 <a href="https://discord.gg/KuqP7NE"><img src="https://discordapp.com/api/guilds/473448917040758787/widget.png?style=banner2" width="25%"></a>
 
