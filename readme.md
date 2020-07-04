@@ -35,7 +35,7 @@ A fast and feature-rich implementation of an ESP8266/ESP32 webserver to control 
 
 ## 📲 Quick start guide and documentation
 
-See the [WLED-wiki](https://github.com/Aircoookie/WLED/wiki)!
+See the [WLED-wiki](https://github.com/Aircoookie/WLED/wiki)!<br>
 See the [Music Reactive-wiki from atuline](https://github.com/atuline/WLED/wiki)!
 
 DrZzs has made some excellent video guides:
@@ -44,26 +44,6 @@ DrZzs has made some excellent video guides:
 
 If you'd rather read, here is a very [detailed step-by-step beginner tutorial](https://tynick.com/blog/11-03-2019/getting-started-with-wled-on-esp8266/) by tynick!
 
-Russian speakers, check out the videos by Room31:
-[WLED Firmware Overview: Interface and Settings](https://youtu.be/h7lKsczEI7E)
-[ESP8266 based LED controller for WS2812b strip. WLED Firmware + OpenHAB](https://youtu.be/K4ioTt3XvGc)
-
-## 🖼️ Images
-<img src="/images/macbook-pro-space-gray-on-the-wooden-table.webp" width="50%"><img src="/images/walking-with-iphone-x.webp" width="50%">
-
-## 💾 Compatible LED Strips
-Type | Voltage | Comments
-|---|---|---|
-WS2812B | 5v |
-WS2813 | 5v |
-SK6812 | 5v | RGBW
-APA102 | 5v | C/D
-WS2801 | 5v | C/D
-LPD8806 | 5v | C/D
-TM1814 | 12v | RGBW
-WS2811 | 12v | 3-LED segments
-WS2815 | 12v |
-GS8208 | 12v |
 
 ## ✌️ Other
 
