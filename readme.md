@@ -16,7 +16,8 @@ A fast and feature-rich implementation of an ESP8266/ESP32 webserver to control 
 - Everything from WLED
 - MSGEQ7 Support
 - Music Reactive Effects from atuline and his community
-- Ehmmm.... Yes
+- EEPROM Saving
+- Frequency per Preset
 
 ## 💡 Supported light control interfaces
 - WLED app for Android and iOS
