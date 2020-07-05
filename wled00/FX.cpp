@@ -3620,11 +3620,12 @@ uint16_t WS2812FX::mode_gravimeter(void) {                                // Gra
 
   if(SEGMENT.intensity > 0) {
     tempsamp = map(mappedValue, 0, SEGMENT.intensity*4, 0, SEGLEN);
+    tempsamp = constrain(tempsamp, 0, SEGLEN);
     gravity = 8 - SEGMENT.speed/32;
 
     for (int i=0; i<tempsamp; i++) {
       uint8_t index = inoise8(i*mappedValue+millis(), 5000+i*mappedValue);
-      setPixCol(i, index, (mappedValue/4) - 1);
+      setPixCol(i, index, map(mappedValue, 0, 1024, 0, 255));
     }
   }
     
