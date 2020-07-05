@@ -1,5 +1,5 @@
-  /*
-   * WS2812FX.h - Library for WS2812 LED effects.
+/*
+  WS2812FX.h - Library for WS2812 LED effects.
   Harm Aldick - 2016
   www.aldick.org
   LICENSE
@@ -36,14 +36,14 @@
 #define DEFAULT_BRIGHTNESS (uint8_t)127
 #define DEFAULT_MODE       (uint8_t)0
 #define DEFAULT_SPEED      (uint8_t)128
-#define DEFAULT_INTENSITY  (uint8_t)128
+#define DEFAULT_FREQMODE   (uint8_t)0
 #define DEFAULT_COLOR      (uint32_t)0xFFAA00
 
 #define MIN(a,b) ((a)<(b)?(a):(b))
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
 /* Not used in all effects yet */
-#define WLED_FPS         60
+#define WLED_FPS         42
 #define FRAMETIME        (1000/WLED_FPS)
 
 /* each segment uses 52 bytes of SRAM memory, so if you're application fails because of
@@ -99,7 +99,7 @@
 #define IS_REVERSE      ((SEGMENT.options & REVERSE     ) == REVERSE     )
 #define IS_SELECTED     ((SEGMENT.options & SELECTED    ) == SELECTED    )
 
-#define MODE_COUNT                     107
+#define MODE_COUNT  122
 
 #define FX_MODE_STATIC                   0
 #define FX_MODE_BLINK                    1
@@ -206,10 +206,30 @@
 #define FX_MODE_CANDLE_MULTI           102
 #define FX_MODE_SOLID_GLITTER          103
 #define FX_MODE_SUNRISE                104
-#define FX_MODE_FLOW                   105
-#define FX_MODE_MUSIC                  106
+#define FX_MODE_PHASED                 105
+#define FX_MODE_TWINKLEUP              106
+#define FX_MODE_NOISEPAL               107
+#define FX_MODE_SINEWAVE               108
+#define FX_MODE_PHASEDNOISE            109
+#define FX_MODE_FLOW                   110
+#define FX_MODE_CHUNCHUN               111
+#define FX_MODE_MUSIC_PERCENTAGE       112
+#define FX_MODE_GRAVIMETER             113
+#define FX_MODE_JUGGLES                114
+#define FX_MODE_MATRIPIX               115
+#define FX_MODE_MIDNOISE               116
+#define FX_MODE_NOISEFIRE              117
+#define FX_MODE_PIXELS                 118
+#define FX_MODE_PIXELWAVE              119
+#define FX_MODE_PLASMOID               120
+#define FX_MODE_PUDDLES                121
 
-extern uint16_t mappedValue;
+
+
+extern uint16_t mappedValue;              //Needed for Music modes
+extern uint8_t myVals[32];                //Needed for Music modes
+extern int selectedFreq;
+
 
 
 class WS2812FX {
@@ -217,7 +237,7 @@ class WS2812FX {
 
   // pre show callback
   typedef void (*show_callback) (void);
-
+  
   // segment parameters
   public:
     typedef struct Segment { // 24 bytes
@@ -225,6 +245,7 @@ class WS2812FX {
       uint16_t stop; //segment invalid if stop == 0
       uint8_t speed;
       uint8_t intensity;
+	    uint8_t freqMode;
       uint8_t palette;
       uint8_t mode;
       uint8_t options; //bit pattern: msb first: transitional needspixelstate tbd tbd (paused) on reverse selected
@@ -298,7 +319,7 @@ class WS2812FX {
     } segment_runtime;
 
     WS2812FX() {
-      //assign each member of the _mode[] array to its respective function reference
+      //assign each member of the _mode[] array to its respective function reference 
       _mode[FX_MODE_STATIC]                  = &WS2812FX::mode_static;
       _mode[FX_MODE_BLINK]                   = &WS2812FX::mode_blink;
       _mode[FX_MODE_COLOR_WIPE]              = &WS2812FX::mode_color_wipe;
@@ -404,9 +425,23 @@ class WS2812FX {
       _mode[FX_MODE_CANDLE_MULTI]            = &WS2812FX::mode_candle_multi;
       _mode[FX_MODE_SOLID_GLITTER]           = &WS2812FX::mode_solid_glitter;
       _mode[FX_MODE_SUNRISE]                 = &WS2812FX::mode_sunrise;
+      _mode[FX_MODE_PHASED]                  = &WS2812FX::mode_phased;
+      _mode[FX_MODE_TWINKLEUP]               = &WS2812FX::mode_twinkleup;
+      _mode[FX_MODE_NOISEPAL]                = &WS2812FX::mode_noisepal;
+      _mode[FX_MODE_SINEWAVE]                = &WS2812FX::mode_sinewave;
+      _mode[FX_MODE_PHASEDNOISE]             = &WS2812FX::mode_phased_noise;
       _mode[FX_MODE_FLOW]                    = &WS2812FX::mode_flow;
-      _mode[FX_MODE_MUSIC]                   = &WS2812FX::mode_music;
-
+      _mode[FX_MODE_CHUNCHUN]                = &WS2812FX::mode_chunchun;
+      _mode[FX_MODE_MUSIC_PERCENTAGE]        = &WS2812FX::mode_music_percentage;
+      _mode[FX_MODE_GRAVIMETER]              = &WS2812FX::mode_gravimeter;
+      _mode[FX_MODE_JUGGLES]                 = &WS2812FX::mode_juggles;
+      _mode[FX_MODE_MATRIPIX]                = &WS2812FX::mode_matripix;
+      _mode[FX_MODE_MIDNOISE]                = &WS2812FX::mode_midnoise;
+      _mode[FX_MODE_NOISEFIRE]               = &WS2812FX::mode_noisefire;
+      _mode[FX_MODE_PIXELS]                  = &WS2812FX::mode_pixels;
+      _mode[FX_MODE_PIXELWAVE]               = &WS2812FX::mode_pixelwave;
+      _mode[FX_MODE_PLASMOID]                = &WS2812FX::mode_plasmoid;
+      _mode[FX_MODE_PUDDLES]                 = &WS2812FX::mode_puddles;
 
       _brightness = DEFAULT_BRIGHTNESS;
       currentPalette = CRGBPalette16(CRGB::Black);
@@ -423,10 +458,10 @@ class WS2812FX {
       service(void),
       blur(uint8_t),
       fade_out(uint8_t r),
-      fade2black(uint8_t r),
       setMode(uint8_t segid, uint8_t m),
       setColor(uint8_t slot, uint8_t r, uint8_t g, uint8_t b, uint8_t w = 0),
       setColor(uint8_t slot, uint32_t c),
+      setPixCol(uint16_t location, uint32_t index, uint8_t intensity),
       setBrightness(uint8_t b),
       setRange(uint16_t i, uint16_t i2, uint32_t col),
       setShowCallback(show_callback cb),
@@ -437,10 +472,7 @@ class WS2812FX {
       setPixelColor(uint16_t n, uint32_t c),
       setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w = 0),
       show(void),
-      setRgbwPwm(void),
-      setPixCol(uint16_t location, uint32_t index, uint8_t intensity),
-      noise8_help(uint8_t),
-      mapNoiseToLEDsUsingPalette();
+      setRgbwPwm(void);
 
     bool
       reverseMode = false,
@@ -448,7 +480,7 @@ class WS2812FX {
       gammaCorrectCol = true,
       applyToAllSelected = true,
       segmentsAreIdentical(Segment* a, Segment* b),
-      setEffectConfig(uint8_t m, uint8_t s, uint8_t i, uint8_t p);
+      setEffectConfig(uint8_t m, uint8_t s, uint8_t i, uint8_t fm, uint8_t p);
 
     uint8_t
       mainSegment = 0,
@@ -471,8 +503,7 @@ class WS2812FX {
     uint16_t
       ablMilliampsMax,
       currentMilliamps,
-      triwave16(uint16_t),
-      XY(int,int);
+      triwave16(uint16_t);
 
     uint32_t
       timebase,
@@ -601,8 +632,23 @@ class WS2812FX {
       mode_candle_multi(void),
       mode_solid_glitter(void),
       mode_sunrise(void),
+      mode_phased(void),
+      mode_twinkleup(void),
+      mode_noisepal(void),
+      mode_sinewave(void),
+      mode_phased_noise(void),
       mode_flow(void),
-      mode_music(void);
+      mode_chunchun(void),
+      mode_music_percentage(void),
+      mode_gravimeter(void),
+      mode_juggles(void),
+      mode_matripix(void),
+      mode_midnoise(void),
+      mode_noisefire(void),
+      mode_pixels(void),
+      mode_pixelwave(void),
+      mode_plasmoid(void),
+      mode_puddles(void);
 
   private:
     NeoPixelWrapper *bus;
@@ -654,20 +700,21 @@ class WS2812FX {
 
     CRGB twinklefox_one_twinkle(uint32_t ms, uint8_t salt, bool cat);
     CRGB pacifica_one_layer(uint16_t i, CRGBPalette16& p, uint16_t cistart, uint16_t wavescale, uint8_t bri, uint16_t ioff);
-
+    
     uint32_t _lastPaletteChange = 0;
     uint32_t _lastShow = 0;
-
+    
     #ifdef WLED_USE_ANALOG_LEDS
     uint32_t _analogLastShow = 0;
     RgbwColor _analogLastColor = 0;
     uint8_t _analogLastBri = 0;
     #endif
-
+    
     uint8_t _segment_index = 0;
     uint8_t _segment_index_palette_last = 99;
-    segment _segments[MAX_NUM_SEGMENTS] = { // SRAM footprint: 27 bytes per element
-      { 0, 7, DEFAULT_SPEED, DEFAULT_INTENSITY, 0, DEFAULT_MODE, NO_OPTIONS, 1, 0, 255, {DEFAULT_COLOR}}
+    segment _segments[MAX_NUM_SEGMENTS] = { // SRAM footprint: 24 bytes per element
+      // start, stop, speed, intensity, palette, mode, options, grouping, spacing, opacity (unused), color[]
+      { 0, 7, DEFAULT_SPEED, 128, 0, DEFAULT_MODE, NO_OPTIONS, 1, 0, 255, {DEFAULT_COLOR}}
     };
     segment_runtime _segment_runtimes[MAX_NUM_SEGMENTS]; // SRAM footprint: 28 bytes per element
     friend class Segment_runtime;
@@ -688,7 +735,9 @@ const char JSON_mode_names[] PROGMEM = R"=====([
 "Noise 1","Noise 2","Noise 3","Noise 4","Colortwinkles","Lake","Meteor","Meteor Smooth","Railway","Ripple",
 "Twinklefox","Twinklecat","Halloween Eyes","Solid Pattern","Solid Pattern Tri","Spots","Spots Fade","Glitter","Candle","Fireworks Starburst",
 "Fireworks 1D","Bouncing Balls","Sinelon","Sinelon Dual","Sinelon Rainbow","Popcorn","Drip","Plasma","Percent","Ripple Rainbow",
-"Heartbeat","Pacifica","Candle Multi","Solid Glitter","Sunrise","Flow","Music"
+"Heartbeat","Pacifica","Candle Multi", "Solid Glitter","Sunrise","Phased","Twinkleup","Noise Pal", "Sine","Phased Noise",
+"Flow","Chunchun","Music: Percentage", "Music: GraviMeter", "Music: Juggles", "Music: MatriPix", "Music: MidNoise", "Music: NoiseFire",
+"Music: Pixels", "Music: Pixelwave", "Music: Plasmoid", "Music: Puddles"
 ])=====";
 
 

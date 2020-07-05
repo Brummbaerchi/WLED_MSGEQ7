@@ -9,37 +9,29 @@
  * Consider the v2 usermod API if you need a more advanced feature set!
  */
 
-/*
- * Functions and variable delarations moved to audio_reactive.h
- * Not 100% sure this was done right. There is probably a better way to handle this...
- */
+//Use userVar0 and userVar1 (API calls &U0=,&U1=, uint16_t)
 
-
-// This gets called once at boot. Do all initialization that doesn't depend on network here
-void userSetup()
-{
-#ifndef ESP8266
-  pinMode(LED_BUILTIN, OUTPUT);
-
- sampling_period_us = round(1000000*(1.0/samplingFrequency));
-                              // Core where the task should run
-#endif
+//gets called once at boot. Do all initialization that doesn't depend on network here
+void userSetup() {
+  pinMode(A0, INPUT);
 
   initAudio();
-
+  
 }
 
-// This gets called every time WiFi is (re-)connected. Initialize own network interfaces here
+//gets called every time WiFi is (re-)connected. Initialize own network interfaces here
 void userConnected()
 {
+
 }
 
-// userLoop. You can use "if (WLED_CONNECTED)" to check for successful connection
-void userLoop() {
-
+//loop. You can use "if (WLED_CONNECTED)" to check for successful connection
+void userLoop()
+{
   if (millis()-lastTime > delayMs) {                          // I need to run this continuously because the animations are too slow
     lastTime = millis();
     refreshAudio();
+    myVals[millis()%32] = mappedValue;
   }
-
-} // userLoop()
+  
+}

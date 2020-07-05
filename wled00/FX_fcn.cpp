@@ -136,6 +136,7 @@ void WS2812FX::setPixelColor(uint16_t i, byte r, byte g, byte b, byte w)
     }
   }
   
+  //reorder channels to selected order
   RgbwColor col;
   switch (colorOrder)
   {
@@ -309,11 +310,11 @@ uint8_t WS2812FX::getPaletteCount()
 
 //TODO transitions
 
-bool WS2812FX::setEffectConfig(uint8_t m, uint8_t s, uint8_t in, uint8_t p) {
 
+bool WS2812FX::setEffectConfig(uint8_t m, uint8_t s, uint8_t in, uint8_t fm, uint8_t p) {
   uint8_t mainSeg = getMainSegmentId();
   Segment& seg = _segments[getMainSegmentId()];
-  uint8_t modePrev = seg.mode, speedPrev = seg.speed, intensityPrev = seg.intensity, palettePrev = seg.palette;
+  uint8_t modePrev = seg.mode, speedPrev = seg.speed, intensityPrev = seg.intensity, freqModePrev = seg.freqMode, palettePrev = seg.palette;
 
   bool applied = false;
   
@@ -324,6 +325,7 @@ bool WS2812FX::setEffectConfig(uint8_t m, uint8_t s, uint8_t in, uint8_t p) {
       {
         _segments[i].speed = s;
         _segments[i].intensity = in;
+		_segments[i].freqMode = fm;
         _segments[i].palette = p;
         setMode(i, m);
         applied = true;
@@ -334,11 +336,12 @@ bool WS2812FX::setEffectConfig(uint8_t m, uint8_t s, uint8_t in, uint8_t p) {
   if (!applyToAllSelected || !applied) {
     seg.speed = s;
     seg.intensity = in;
+    seg.freqMode = fm;
     seg.palette = p;
     setMode(mainSegment, m);
   }
-
-  if (seg.mode != modePrev || seg.speed != speedPrev || seg.intensity != intensityPrev || seg.palette != palettePrev) return true;
+  
+  if (seg.mode != modePrev || seg.speed != speedPrev || seg.intensity != intensityPrev || seg.freqMode != freqModePrev || seg.palette != palettePrev) return true;
   return false;
 }
 
@@ -401,7 +404,12 @@ uint8_t WS2812FX::getMaxSegments(void) {
 
 uint8_t WS2812FX::getMainSegmentId(void) {
   if (mainSegment >= MAX_NUM_SEGMENTS) return 0;
-  return mainSegment;
+  if (_segments[mainSegment].isActive()) return mainSegment;
+  for (uint8_t i = 0; i < MAX_NUM_SEGMENTS; i++) //get first active
+  {
+    if (_segments[i].isActive()) return i;
+  }
+  return 0;
 }
 
 uint32_t WS2812FX::getColor(void) {
@@ -529,11 +537,14 @@ void WS2812FX::setShowCallback(show_callback cb)
 
 void WS2812FX::setTransitionMode(bool t)
 {
-  _segment_index = getMainSegmentId();
-  SEGMENT.setOption(SEG_OPTION_TRANSITIONAL, t);
-  if (!t) return;
   unsigned long waitMax = millis() + 20; //refresh after 20 ms if transition enabled
-  if (SEGMENT.mode == FX_MODE_STATIC && SEGENV.next_time > waitMax) SEGENV.next_time = waitMax;
+  for (uint16_t i = 0; i < MAX_NUM_SEGMENTS; i++)
+  {
+    _segment_index = i;
+    SEGMENT.setOption(SEG_OPTION_TRANSITIONAL, t);
+
+    if (t && SEGMENT.mode == FX_MODE_STATIC && SEGENV.next_time > waitMax) SEGENV.next_time = waitMax;
+  }
 }
 
 /*
@@ -567,33 +578,6 @@ uint32_t WS2812FX::color_blend(uint32_t color1, uint32_t color2, uint8_t blend) 
 void WS2812FX::fill(uint32_t c) {
   for(uint16_t i = 0; i < SEGLEN; i++) {
     setPixelColor(i, c);
-  }
-}
-
-/*
- * fade out function, higher rate = quicker fade
- */
-void WS2812FX::fade2black(uint8_t rate) {
-  uint32_t color;
-  
-  //rate = rate >> 1;
-  float mappedRate = (float) map(rate, 0, 255, 1, 100) ;
-
-  mappedRate = mappedRate / 100;
-  
-  for(uint16_t i = 0; i < SEGLEN; i++) {
-    color = getPixelColor(i);
-    int w1 = (color >> 24) & 0xff;
-    int r1 = (color >> 16) & 0xff;
-    int g1 = (color >>  8) & 0xff;
-    int b1 =  color        & 0xff;
-
-    int w = w1 * mappedRate;
-    int r = r1 * (mappedRate * 1.05);      // acount for the fact that leds stay red on much lower intensities
-    int g = g1 * mappedRate;
-    int b = b1 * mappedRate;
-    
-    setPixelColor(i, r, g, b, w);
   }
 }
 

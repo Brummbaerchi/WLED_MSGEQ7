@@ -12,7 +12,7 @@ void XML_response(AsyncWebServerRequest *request, char* dest)
 
   olen = 0;
   oappend((const char*)F("<?xml version=\"1.0\" ?><vs><ac>"));
-  oappendi((nightlightActive && nightlightFade) ? briT : bri);
+  oappendi((nightlightActive && nightlightMode > NL_MODE_SET) ? briT : bri);
   oappend("</ac>");
 
   for (int i = 0; i < 3; i++)
@@ -34,20 +34,20 @@ void XML_response(AsyncWebServerRequest *request, char* dest)
   oappend("</nr><nl>");
   oappendi(nightlightActive);
   oappend("</nl><nf>");
-  oappendi(nightlightFade);
+  oappendi(nightlightMode > NL_MODE_SET);
   oappend("</nf><nd>");
   oappendi(nightlightDelayMins);
   oappend("</nd><nt>");
   oappendi(nightlightTargetBri);
-  oappend("</nt><sq>");
-  oappendi(soundSquelch);
-  oappend("</sq><fx>");
+  oappend("</nt><fx>");
   oappendi(effectCurrent);
   oappend("</fx><sx>");
   oappendi(effectSpeed);
   oappend("</sx><ix>");
   oappendi(effectIntensity);
-  oappend("</ix><fp>");
+  oappend("</ix><fm>");
+  oappendi(effectFreqMode);  
+  oappend("</fm><fp>");
   oappendi(effectPalette);
   oappend("</fp><wv>");
   if (strip.rgbwMode) {
@@ -120,7 +120,7 @@ void URL_response(AsyncWebServerRequest *request)
   for (int i = 0; i < 3; i++)
   {
    sprintf(s,"%02X", col[i]);
-   oappend(s);
+   oappend(s); 
   }
   oappend("&C2=h");
   for (int i = 0; i < 3; i++)
@@ -134,6 +134,8 @@ void URL_response(AsyncWebServerRequest *request)
   oappendi(effectSpeed);
   oappend("&IX=");
   oappendi(effectIntensity);
+  oappend("&FM=");
+  oappendi(effectFreqMode);
   oappend("&FP=");
   oappendi(effectPalette);
 
@@ -143,7 +145,7 @@ void URL_response(AsyncWebServerRequest *request)
   oappend((const char*)F("<html><body><a href=\""));
   oappend(s2buf);
   oappend((const char*)F("\" target=\"_blank\">"));
-  oappend(s2buf);
+  oappend(s2buf);  
   oappend((const char*)F("</a></body></html>"));
 
   if (request != nullptr) request->send(200, "text/html", obuf);
@@ -303,8 +305,7 @@ void getSettingsJS(byte subPage, char* dest)
     sappend('v',"BF",briMultiplier);
     sappend('v',"TB",nightlightTargetBri);
     sappend('v',"TL",nightlightDelayMinsDefault);
-    sappend('c',"TW",nightlightFade);
-    sappend('v',"SQ",soundSquelch);
+    sappend('v',"TW",nightlightMode);
     sappend('i',"PB",strip.paletteBlend);
     sappend('c',"RV",strip.reverseMode);
     sappend('c',"SL",skipFirstLed);
@@ -384,7 +385,7 @@ void getSettingsJS(byte subPage, char* dest)
       case HUE_ERROR_TIMEOUT      : strcpy(hueErrorString,(char*)F("Timeout"));                 break;
       default: sprintf(hueErrorString,"Bridge Error %i",hueError);
     }
-
+    
     sappends('m',"(\"sip\")[0]",hueErrorString);
     #endif
   }
@@ -455,7 +456,7 @@ void getSettingsJS(byte subPage, char* dest)
     oappendi(VERSION);
     oappend(")\";");
   }
-
+  
   #ifdef WLED_ENABLE_DMX // include only if DMX is enabled
   if (subPage == 7)
   {
@@ -465,7 +466,7 @@ void getSettingsJS(byte subPage, char* dest)
     sappend('v',"CG",DMXGap);
     sappend('v',"CS",DMXStart);
     sappend('v',"SL",DMXStartLED);
-
+    
     sappend('i',"CH1",DMXFixtureMap[0]);
     sappend('i',"CH2",DMXFixtureMap[1]);
     sappend('i',"CH3",DMXFixtureMap[2]);

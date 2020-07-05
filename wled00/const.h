@@ -6,7 +6,7 @@
  */
 
 //Defaults
-#define DEFAULT_CLIENT_SSID "TESTESTTEST"
+#define DEFAULT_CLIENT_SSID "Your_Network"
 #define DEFAULT_AP_PASS     "wled1234"
 #define DEFAULT_OTA_PASS    "wledota"
 
@@ -18,6 +18,9 @@
 #define USERMOD_ID_UNSPECIFIED    1            //Default value for a general user mod that does not specify a custom ID
 #define USERMOD_ID_EXAMPLE        2            //Usermod "usermod_v2_example.h"
 #define USERMOD_ID_TEMPERATURE    3            //Usermod "usermod_temperature.h"
+#define USERMOD_ID_FIXNETSERVICES 4            //Usermod "usermod_Fix_unreachable_netservices.h"
+#define USERMOD_ID_PIRSWITCH      5            //Usermod "usermod_PIR_sensor_switch.h"
+#define USERMOD_ID_IMU            6            //Usermod "usermod_mpu6050_imu.h"
 
 //Access point behavior
 #define AP_BEHAVIOR_BOOT_NO_CONN  0            //Open AP when no connection after boot
@@ -100,8 +103,14 @@
 #define SEG_OPTION_NONUNITY       4            //Indicates that the effect does not use FRAMETIME or needs getPixelColor
 #define SEG_OPTION_TRANSITIONAL   7
 
+//Timer mode types
+#define NL_MODE_SET               0            //After nightlight time elapsed, set to target brightness
+#define NL_MODE_FADE              1            //Fade to target brightness gradually
+#define NL_MODE_COLORFADE         2            //Fade to target brightness and secondary color gradually
+#define NL_MODE_SUN               3            //Sunrise/sunset. Target brightness is set immediately, then Sunrise effect is started. Max 60 min.
+
 //EEPROM size
-#define EEPSIZE 4095  //Maximum is 4096
+#define EEPSIZE 2560  //Maximum is 4096
 
 #define NTP_PACKET_SIZE 48
 
