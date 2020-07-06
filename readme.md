@@ -7,12 +7,12 @@ At least i try to.<br><br>
 ## Current Pins: 
 audio_reactive.h:
 
-#define pinAnalog A0      //A0 on ESP8266
-#define pinReset 5        //GPIO5
-#define pinStrobe 4       //GPIO4  
-
+#define pinAnalog A0      //A0 on ESP8266<br>
+#define pinReset 5        //GPIO5<br>
+#define pinStrobe 4       //GPIO4<br>
+<br><br>
 feel free to change it for your needs.
-
+<br><br><br><br>
 THIS MAY NOT BE MAINTAINED!
 
 <br>
