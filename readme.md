@@ -3,6 +3,16 @@ WLED is neat. WLED-Audio reactive my Atuline is neat too.<br>
 But i'm missing MSGEQE7 support so here i am coding it myself.<br>
 At least i try to.<br><br>
 
+
+## Current Pins: 
+audio_reactive.h:
+
+#define pinAnalog A0      //A0 on ESP8266
+#define pinReset 5        //GPIO5
+#define pinStrobe 4       //GPIO4  
+
+feel free to change it for your needs.
+
 THIS MAY NOT BE MAINTAINED!
 
 <br>
