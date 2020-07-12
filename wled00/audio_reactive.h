@@ -1,6 +1,11 @@
 #define MSGEQ7_10BIT              //Use all 10 Bits of the ESP8266's ADC, ESP32 supports 12 Bit (but not the MSGEQ7 lib)
 #include "MSGEQ7.h"               //https://github.com/NicoHood/MSGEQ7
-#define pinAnalog A0
+
+#ifdef ESP8266
+  #define pinAnalog A0
+#else 
+  #define pinAnalog 36
+#endif
 #define pinReset 5
 #define pinStrobe 4
 #define MSGEQ7_SMOOTH 0
