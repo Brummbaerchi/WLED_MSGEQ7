@@ -31,7 +31,7 @@ void userLoop()
   if (millis()-lastTime > delayMs) {                          // I need to run this continuously because the animations are too slow
     lastTime = millis();
     refreshAudio();
-    myVals[millis()%32] = mappedValue;
+    myVals[millis()%32] = mappedValue[7];
   }
   
 }

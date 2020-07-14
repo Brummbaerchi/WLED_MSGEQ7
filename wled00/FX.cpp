@@ -29,7 +29,7 @@
 #define IBN 5100
 #define PALETTE_SOLID_WRAP (paletteBlend == 1 || paletteBlend == 3)
 
-extern uint16_t mappedValue;              //Needed for Music modes
+extern uint16_t mappedValue[8];              //Needed for Music modes
 
 /*
  * No blinking. Just plain old static light.
@@ -3591,12 +3591,15 @@ uint16_t WS2812FX::mode_music_percentage(void) {
   
   fade_out(SEGMENT.speed);
   if(SEGMENT.intensity > 0) {     //WLED crashes otherwise
-    uint16_t numberMusicLEDs = map(mappedValue, 0, SEGMENT.intensity*4, 0, SEGLEN);
+    uint16_t numberMusicLEDs = map(mappedValue[SEGMENT.freqMode], 0, SEGMENT.intensity*4, 0, SEGLEN);
     numberMusicLEDs = constrain(numberMusicLEDs, 0, SEGLEN);
     for(uint16_t i = 0;i < numberMusicLEDs;i++) {
       setPixelColor(i, SEGCOLOR(0));
     }
   }
+  Serial.print(SEGMENT.freqMode);
+  Serial.print(": ");
+  Serial.println(mappedValue[SEGMENT.freqMode]);
   
   return FRAMETIME;
 }
@@ -3619,13 +3622,13 @@ uint16_t WS2812FX::mode_gravimeter(void) {                                // Gra
   fade_out(240);
 
   if(SEGMENT.intensity > 0) {
-    tempsamp = map(mappedValue, 0, SEGMENT.intensity*4, 0, SEGLEN);
+    tempsamp = map(mappedValue[SEGMENT.freqMode], 0, SEGMENT.intensity*4, 0, SEGLEN);
     tempsamp = constrain(tempsamp, 0, SEGLEN);
     gravity = 8 - SEGMENT.speed/32;
 
     for (int i=0; i<tempsamp; i++) {
-      uint8_t index = inoise8(i*mappedValue+millis(), 5000+i*mappedValue);
-      setPixCol(i, index, map(mappedValue, 0, 1024, 0, 255));
+      uint8_t index = inoise8(i*mappedValue[SEGMENT.freqMode]+millis(), 5000+i*mappedValue[SEGMENT.freqMode]);
+      setPixCol(i, index, map(mappedValue[SEGMENT.freqMode], 0, 1024, 0, 255));
     }
   }
     
@@ -3656,7 +3659,7 @@ uint16_t WS2812FX::mode_juggles(void) {                                   // Jug
     fade_out(224);
 
     for (int i=0; i<SEGMENT.intensity/32; i++) {
-      setPixCol(beatsin16(thistime+i*2,0,SEGLEN-1), millis()/4+i*2, mappedValue);
+      setPixCol(beatsin16(thistime+i*2,0,SEGLEN-1), millis()/4+i*2, mappedValue[SEGMENT.freqMode]);
     }
   }
 
@@ -3674,7 +3677,7 @@ uint16_t WS2812FX::mode_matripix(void) {                                  // Mat
   EVERY_N_MILLISECONDS_I(pixTimer, SEGMENT.speed) {                       // Using FastLED's timer. You want to change speed? You need to . .
 
     pixTimer.setPeriod((256 - SEGMENT.speed) >> 2);                       // change it down here!!!
-    int pixBri = mappedValue * SEGMENT.intensity / 128;
+    int pixBri = mappedValue[SEGMENT.freqMode] * SEGMENT.intensity / 128;
     setPixCol(SEGLEN-1, millis(), pixBri);
     for (int i=0; i<SEGLEN-1; i++) setPixelColor(i,getPixelColor(i+1));
 
@@ -3694,13 +3697,13 @@ uint16_t WS2812FX::mode_midnoise(void) {                                  // Mid
 
   fade_out(SEGMENT.speed);
 
-  uint16_t maxLen = mappedValue * SEGMENT.intensity / 256;                  // Too sensitive.
+  uint16_t maxLen = mappedValue[SEGMENT.freqMode] * SEGMENT.intensity / 256;                  // Too sensitive.
   maxLen = maxLen * SEGMENT.intensity / 256;                              // Reduce sensitity/length.
 
   if (maxLen >SEGLEN/2) maxLen = SEGLEN/2;
 
   for (int i=(SEGLEN/2-maxLen); i<(SEGLEN/2+maxLen); i++) {
-    uint8_t index = inoise8(i*mappedValue+xdist, ydist+i*mappedValue);        // Get a value from the noise function. I'm using both x and y axis.
+    uint8_t index = inoise8(i*mappedValue[SEGMENT.freqMode]+xdist, ydist+i*mappedValue[SEGMENT.freqMode]);        // Get a value from the noise function. I'm using both x and y axis.
     setPixCol(i, index, 255);
   }
 
@@ -3732,7 +3735,7 @@ uint16_t WS2812FX::mode_noisefire(void) {                                 // Noi
     for (int i = 0; i < SEGLEN; i++) {
       index = inoise8(i*xscale,millis()*yscale*SEGLEN/255);                       // X location is constant, but we move along the Y at the rate of millis(). By Andrew Tuline.
       index = (255 - i*256/SEGLEN) * index/128;                                   // Now we need to scale index so that it gets blacker as we get close to one of the ends.
-      color = ColorFromPalette(currentPalette, index, map(mappedValue, 0, SEGMENT.intensity*4, 0, 255), LINEARBLEND);  // Use the my own palette.
+      color = ColorFromPalette(currentPalette, index, map(mappedValue[SEGMENT.freqMode], 0, SEGMENT.intensity*4, 0, 255), LINEARBLEND);  // Use the my own palette.
       setPixelColor(i, color.red, color.green, color.blue);                       // This is a simple y=mx+b equation that's been scaled. index/128 is another scaling.
     }
   }
@@ -3746,7 +3749,7 @@ uint16_t WS2812FX::mode_pixels(void) {                                    // Pix
 
   for (int i=0; i <SEGMENT.intensity/16; i++) {
     uint16_t segLoc = random(SEGLEN);                                     // 16 bit for larger strands of LED's.
-    setPixCol(segLoc, myVals[i%32]+i*4, mappedValue);
+    setPixCol(segLoc, myVals[i%32]+i*4, mappedValue[SEGMENT.freqMode]);
   }
 
   return FRAMETIME;
@@ -3761,7 +3764,7 @@ uint16_t WS2812FX::mode_pixelwave(void) {                                 // Pix
   EVERY_N_MILLISECONDS_I(pixTimer, SEGMENT.speed) {                       // Using FastLED's timer. You want to change speed? You need to . .
 
     pixTimer.setPeriod((256 - SEGMENT.speed) >> 2);                       // change it down here!!! By Andrew Tuline.
-    int pixBri = mappedValue * SEGMENT.intensity / 128;
+    int pixBri = mappedValue[SEGMENT.freqMode] * SEGMENT.intensity / 128;
     setPixCol(SEGLEN/2, millis(), pixBri);
 
     for (int i=SEGLEN-1; i>SEGLEN/2; i--) {                               // Move to the right.
@@ -3798,7 +3801,7 @@ uint16_t WS2812FX::mode_plasmoid(void) {                                  // Pla
     thisbright += cos8((i*117)+thatphase)/2;                              // Let's munge the brightness a bit and animate it all with the phases.
     colorIndex=thisbright;
 
-    if (mappedValue * 8 * SEGMENT.intensity/1024 > thisbright) {thisbright = 255;} else {thisbright = 0;}
+    if (mappedValue[SEGMENT.freqMode] * 8 * SEGMENT.intensity/1024 > thisbright) {thisbright = 255;} else {thisbright = 0;}
 
     setPixCol(i, colorIndex, thisbright);
   }
@@ -3819,8 +3822,8 @@ uint16_t WS2812FX::mode_puddles(void) {                                   // Pud
 
   fade_out(fadeVal);
 
-  if (mappedValue>0 ) {
-    size = mappedValue * SEGMENT.intensity /256 /8 + 1;                        // Determine size of the flash based on the volume.
+  if (mappedValue[SEGMENT.freqMode]>0 ) {
+    size = mappedValue[SEGMENT.freqMode] * SEGMENT.intensity /256 /8 + 1;                        // Determine size of the flash based on the volume.
     if (pos+size>= SEGLEN) size=SEGLEN-pos;
   }
 
@@ -3830,3 +3833,28 @@ uint16_t WS2812FX::mode_puddles(void) {                                   // Pud
 
   return FRAMETIME;
 } // mode_puddles()
+
+
+
+////////////////////////////
+//     MSGEQ7 BinMap      //
+////////////////////////////
+
+uint16_t WS2812FX::mode_binmap(void) {
+  double partLength = SEGLEN / 7.0;
+  uint8_t midOffset = partLength / 2;
+
+  for(int i = 0; i < 7;i++) {
+    uint8_t index = 0;
+    for(int j = i*partLength; j < (i+1)*partLength;j++) {
+      int lum = map(index, midOffset, partLength+1, 0, 255);
+      if(lum < 0) lum = 0 - lum;
+      lum = (lum*mappedValue[i]/1024.0);
+      setPixelColor(j, color_blend(SEGCOLOR(2), color_from_palette(index*(SEGMENT.intensity+1), true, true, 0), lum));
+      index++;
+    }
+  }
+  
+  
+  return FRAMETIME;
+} // mode_binmap

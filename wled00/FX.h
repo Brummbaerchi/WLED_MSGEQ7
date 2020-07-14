@@ -99,7 +99,7 @@
 #define IS_REVERSE      ((SEGMENT.options & REVERSE     ) == REVERSE     )
 #define IS_SELECTED     ((SEGMENT.options & SELECTED    ) == SELECTED    )
 
-#define MODE_COUNT  122
+#define MODE_COUNT  123
 
 #define FX_MODE_STATIC                   0
 #define FX_MODE_BLINK                    1
@@ -223,12 +223,12 @@
 #define FX_MODE_PIXELWAVE              119
 #define FX_MODE_PLASMOID               120
 #define FX_MODE_PUDDLES                121
+#define FX_MODE_BINMAP                 122
 
 
 
-extern uint16_t mappedValue;              //Needed for Music modes
+extern uint16_t mappedValue[8];              //Needed for Music modes
 extern uint8_t myVals[32];                //Needed for Music modes
-extern int selectedFreq;
 
 
 
@@ -442,6 +442,7 @@ class WS2812FX {
       _mode[FX_MODE_PIXELWAVE]               = &WS2812FX::mode_pixelwave;
       _mode[FX_MODE_PLASMOID]                = &WS2812FX::mode_plasmoid;
       _mode[FX_MODE_PUDDLES]                 = &WS2812FX::mode_puddles;
+      _mode[FX_MODE_BINMAP]                  = &WS2812FX::mode_binmap;
 
       _brightness = DEFAULT_BRIGHTNESS;
       currentPalette = CRGBPalette16(CRGB::Black);
@@ -648,7 +649,8 @@ class WS2812FX {
       mode_pixels(void),
       mode_pixelwave(void),
       mode_plasmoid(void),
-      mode_puddles(void);
+      mode_puddles(void),
+      mode_binmap(void);
 
   private:
     NeoPixelWrapper *bus;
@@ -737,7 +739,7 @@ const char JSON_mode_names[] PROGMEM = R"=====([
 "Fireworks 1D","Bouncing Balls","Sinelon","Sinelon Dual","Sinelon Rainbow","Popcorn","Drip","Plasma","Percent","Ripple Rainbow",
 "Heartbeat","Pacifica","Candle Multi", "Solid Glitter","Sunrise","Phased","Twinkleup","Noise Pal", "Sine","Phased Noise",
 "Flow","Chunchun","Music: Percentage", "Music: GraviMeter", "Music: Juggles", "Music: MatriPix", "Music: MidNoise", "Music: NoiseFire",
-"Music: Pixels", "Music: Pixelwave", "Music: Plasmoid", "Music: Puddles"
+"Music: Pixels", "Music: Pixelwave", "Music: Plasmoid", "Music: Puddles", "Music: BinMap"
 ])=====";
 
 

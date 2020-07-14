@@ -13,8 +13,6 @@ void setValuesFromMainSeg()
   effectSpeed = seg.speed;
   effectIntensity = seg.intensity;
   effectFreqMode = seg.freqMode;
-  Serial.print("led.cpp: ");
-  Serial.println(effectFreqMode);
   effectPalette = seg.palette;
 }
 
