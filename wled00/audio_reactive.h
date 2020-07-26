@@ -16,6 +16,7 @@ CMSGEQ7<MSGEQ7_SMOOTH, pinReset, pinStrobe, pinAnalog> MSGEQ7;
 uint16_t musicValue = 0;
 uint16_t mappedValue[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 uint8_t filterValue[8] = {112, 125, 182, 150, 130, 135, 153, 150};    //Set this as you need, it may vary depending on your setup
+//mappedValue and filterValue array: index 0-6 frequency bands, 7: overall volume
 
 uint8_t myVals[32];       //To allow a FX Effect to work, copied from atuline
 bool samplePeak;

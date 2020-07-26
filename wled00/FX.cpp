@@ -3849,8 +3849,9 @@ uint16_t WS2812FX::mode_binmap(void) {
     for(int j = i*partLength; j < (i+1)*partLength;j++) {
       int lum = map(index, midOffset, partLength+1, 0, 255);
       if(lum < 0) lum = 0 - lum;
-      lum = (lum*mappedValue[i]/1024.0);
-      setPixelColor(j, color_blend(SEGCOLOR(2), color_from_palette(index*(SEGMENT.intensity+1), true, true, 0), lum));
+      lum = map(lum, 0, 255, 255, 0);
+      lum = lum*(map(mappedValue[i], 0, (SEGMENT.intensity*4)+1, 0, 1024)/1024.0);
+      setPixelColor(j, color_blend(SEGCOLOR(2), color_from_palette(index*(SEGMENT.speed+1), true, true, 0), lum));
       index++;
     }
   }
