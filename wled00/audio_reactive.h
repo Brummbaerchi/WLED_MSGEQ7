@@ -13,9 +13,9 @@
 
 CMSGEQ7<MSGEQ7_SMOOTH, pinReset, pinStrobe, pinAnalog> MSGEQ7;
 
-int filter = 120;           //Set this as you need, it may vary depending on your setup
 uint16_t musicValue = 0;
 uint16_t mappedValue[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+uint8_t filterValue[8] = {112, 125, 182, 150, 130, 135, 153, 150};    //Set this as you need, it may vary depending on your setup
 
 uint8_t myVals[32];       //To allow a FX Effect to work, copied from atuline
 bool samplePeak;
@@ -30,12 +30,12 @@ void initAudio() {
 void refreshAudio() {
   MSGEQ7.read();                                      //Tells the IC to read Data
   musicValue = MSGEQ7.getVolume();                                //Returns the average Volume among all frequency bands
-  musicValue = constrain(musicValue, filter, 1024);                 //Limit musicValue to avoid underflow
-  mappedValue[7] = map(musicValue, filter, 1024, 0, 1024);
+  musicValue = constrain(musicValue, filterValue[7], 1024);                 //Limit musicValue to avoid underflow
+  mappedValue[7] = map(musicValue, filterValue[7], 1024, 0, 1024);
   
-  for(int i = 0; i < 6;i++) {
+  for(int i = 0; i < 7;i++) {
     musicValue = MSGEQ7.get(i);                          //Select the above chosen frequency and save it
-    musicValue = constrain(musicValue, filter, 1024);                 //Limit musicValue to avoid underflow
-    mappedValue[i] = map(musicValue, filter, 1024, 0, 1024);
+    musicValue = constrain(musicValue, filterValue[i], 1024);                 //Limit musicValue to avoid underflow
+    mappedValue[i] = map(musicValue, filterValue[i], 1024, 0, 1024);
   }
 }
